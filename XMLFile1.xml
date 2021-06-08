@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<rules>
+	<rule id="1" level="0" priority="0">
+		<name>Auth attempt</name>
+		<types>
+			<type>RAW</type>
+			<type>INFO</type>
+		</types>
+		<if>
+			<and>
+				<parse type="match">POST</parse>
+				<parse type="match">auth</parse>
+				<parse type="match">registered:false</parse>
+			</and>
+		</if>
+	</rule>
+
+	<rule id="2" level="0" priority="1">
+		<name>Error</name>
+		<types>
+			<type>RAW</type>
+			<type>ERROR</type>
+		</types>
+		<if>
+			<and>
+				<parse type="match">ERROR</parse>
+			</and>
+		</if>
+	</rule>
+
+	<rule id="3" level="1" priority="1">
+		<name>Several unsuccessful login attempts</name>
+		<if>
+			<listen id="0" time="200" freq="3">
+				<ids>
+					<id>1</id>
+				</ids>
+			</listen>
+		</if>
+	</rule>
+
+	<rule id="4" level="1" priority="2">
+		<name>Several errors</name>
+		<if>
+			<listen id="0" time="200" freq="3">
+				<ids>
+					<id>2</id>
+				</ids>
+			</listen>
+		</if>
+	</rule>
+
+	<rule id="5" level="3" priority="4">
+		<name>Brute and errors</name>
+		<if>
+			<and>
+				<listen id="0" time="500" freq="1">
+					<ids>
+						<id>3</id>
+					</ids>
+				</listen>
+				<id>4</id>
+			</and>
+		</if>
+	</rule>
+
+</rules>
